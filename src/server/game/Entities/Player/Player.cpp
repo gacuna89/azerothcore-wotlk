@@ -166,6 +166,8 @@ Player::Player(WorldSession* session): Unit(), m_mover(this)
 
     m_ExtraFlags = 0;
 
+    OldFactionID = 0;
+
     m_spellModTakingSpell = nullptr;
     //m_pad = 0;
 
@@ -699,6 +701,8 @@ bool Player::Create(ObjectGuid::LowType guidlow, CharacterCreateInfo* createInfo
     SetFullHealth();
 
     CheckAllAchievementCriteria();
+
+    OldFactionID = GetFaction();
 
     return true;
 }
