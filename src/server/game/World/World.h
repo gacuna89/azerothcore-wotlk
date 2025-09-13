@@ -261,7 +261,7 @@ protected:
     void CalendarDeleteOldEvents();
     void ResetGuildCap();
 
-    SQLQueryHolderCallback& AddQueryHolderCallback(SQLQueryHolderCallback&& callback) override;
+    SQLQueryHolderCallback& AddQueryHolderCallback(SQLQueryHolderCallback&& callback);
 
 private:
     WorldConfig _worldConfig;
