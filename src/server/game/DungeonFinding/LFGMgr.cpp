@@ -2157,6 +2157,34 @@ namespace lfg
             if (player->GetMapId() == uint32(dungeon->map))
                 player->TeleportToEntryPoint();
 
+            if (sWorld->getBoolConfig(CONFIG_ALLOW_CROSSFACTION_DUNGEON))
+            {
+                uint8 RealRace = player->getRace(true);
+
+                player->setRace(RealRace);
+                player->setTeamId(player->TeamIdForRace(RealRace));
+                player->setFaction(player->OldFactionID);
+
+                if (group)
+                {
+                    for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
+                    {
+                        if (Player* player2 = itr->GetSource())
+                        {
+                            WorldPacket Data(SMSG_INVALIDATE_PLAYER, 8);
+                            Data << player2->GetGUID();
+                            player->GetSession()->SendPacket(&Data);
+                            player->GetSession()->SendNameQueryOpcode(player2->GetGUID());
+
+                            WorldPacket Data2(SMSG_INVALIDATE_PLAYER, 8);
+                            Data2 << player->GetGUID();
+                            player2->GetSession()->SendPacket(&Data2);
+                            player2->GetSession()->SendNameQueryOpcode(player->GetGUID());
+                        }
+                    }
+                }
+            }
+
             return;
         }
         else
@@ -2177,7 +2205,43 @@ namespace lfg
                 player->SetEntryPoint();
             }
 
-            if (!player->TeleportTo(mapid, x, y, z, orientation, 0, nullptr, mapid == player->GetMapId()))
+            if (player->TeleportTo(mapid, x, y, z, orientation, 0, nullptr, mapid == player->GetMapId()))
+            {
+                if (group && sWorld->getBoolConfig(CONFIG_ALLOW_CROSSFACTION_DUNGEON))
+                {
+                    if (Player* leader = ObjectAccessor::FindPlayerInOrOutOfWorld(group->GetLeaderGUID()))
+                    {
+                        if (player->getFaction() != leader->getFaction())
+                        {
+                            uint8 LeaderRace = leader->getRace();
+
+                            player->OldFactionID = player->getFaction();
+                            player->setRace(LeaderRace);
+                            player->setTeamId(leader->TeamIdForRace(LeaderRace));
+
+                            ChrRacesEntry const* CharRace = sChrRacesStore.LookupEntry(LeaderRace);
+                            player->setFaction(CharRace ? CharRace->FactionID : 0);
+                        }
+                    }
+
+                    for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
+                    {
+                        if (Player* player2 = itr->GetSource())
+                        {
+                            WorldPacket Data(SMSG_INVALIDATE_PLAYER, 8);
+                            Data << player2->GetGUID();
+                            player->GetSession()->SendPacket(&Data);
+                            player->GetSession()->SendNameQueryOpcode(player2->GetGUID());
+
+                            WorldPacket Data2(SMSG_INVALIDATE_PLAYER, 8);
+                            Data2 << player->GetGUID();
+                            player2->GetSession()->SendPacket(&Data2);
+                            player2->GetSession()->SendNameQueryOpcode(player->GetGUID());
+                        }
+                    }
+                }
+            }
+            else
             {
                 error = LFG_TELEPORTERROR_INVALID_LOCATION;
             }
@@ -2583,7 +2647,7 @@ namespace lfg
 
     void LFGMgr::SetTeam(ObjectGuid guid, TeamId teamId)
     {
-        if (sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_GROUP))
+        if (sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_GROUP) || sWorld->getBoolConfig(CONFIG_ALLOW_CROSSFACTION_DUNGEON))
             teamId = TEAM_ALLIANCE; // @Not Sure About That TeamId is supposed to be uint8 Team = 0(@TrinityCore)
 
         PlayersStore[guid].SetTeam(teamId);

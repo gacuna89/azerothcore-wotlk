@@ -370,6 +370,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                     return;
                 }
 
+                if (lang != LANG_ADDON && sender->GetMap()->IsDungeon())
+                    lang = LANG_UNIVERSAL;
+
                 if (type == CHAT_MSG_SAY)
                     sender->Say(msg, Language(lang));
                 else if (type == CHAT_MSG_EMOTE)
@@ -438,6 +441,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                 if (type == CHAT_MSG_PARTY_LEADER && !group->IsLeader(sender->GetGUID()))
                     return;
 
+                if (lang != LANG_ADDON && sender->GetMap()->IsDungeon())
+                    lang = LANG_UNIVERSAL;
+
                 if (!sScriptMgr->OnPlayerCanUseChat(GetPlayer(), type, lang, msg, group))
                 {
                     return;
@@ -501,6 +507,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                         return;
                 }
 
+                if (lang != LANG_ADDON && sender->GetMap()->IsDungeon())
+                    lang = LANG_UNIVERSAL;
+
                 if (!sScriptMgr->OnPlayerCanUseChat(GetPlayer(), type, lang, msg, group))
                 {
                     return;
@@ -524,6 +533,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                         return;
                 }
 
+                if (lang != LANG_ADDON && sender->GetMap()->IsDungeon())
+                    lang = LANG_UNIVERSAL;
+
                 if (!sScriptMgr->OnPlayerCanUseChat(GetPlayer(), type, lang, msg, group))
                 {
                     return;
@@ -541,6 +553,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                 Group* group = GetPlayer()->GetGroup();
                 if (!group || !group->isRaidGroup() || !(group->IsLeader(GetPlayer()->GetGUID()) || group->IsAssistant(GetPlayer()->GetGUID())) || group->isBGGroup())
                     return;
+
+                if (lang != LANG_ADDON && sender->GetMap()->IsDungeon())
+                    lang = LANG_UNIVERSAL;
 
                 if (!sScriptMgr->OnPlayerCanUseChat(GetPlayer(), type, lang, msg, group))
                 {

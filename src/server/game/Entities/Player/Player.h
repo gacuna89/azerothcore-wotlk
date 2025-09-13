@@ -2991,6 +2991,7 @@ private:
     SpellCooldowns m_spellCooldowns;
 
     uint32 m_ChampioningFaction;
+    uint32 OldFactionID;
 
     InstanceTimeMap _instanceResetTimes;
     uint32 _pendingBindId;
