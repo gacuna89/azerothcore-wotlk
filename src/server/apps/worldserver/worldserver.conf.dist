@@ -4310,6 +4310,14 @@ AllowTwoSide.AddFriend = 0
 AllowTwoSide.Trade = 0
 
 #
+#    AllowTwoSide.DungeonFinder
+#        Description: Allow cross-faction dungeon finder matching.
+#        Default:     0 - (Disabled)
+#                     1 - (Enabled)
+
+AllowTwoSide.DungeonFinder = 0
+
+#
 #    TalentsInspecting
 #        Description: Allow inspecting characters from the opposing faction.
 #                     Doesn't affect characters in gamemaster mode.
