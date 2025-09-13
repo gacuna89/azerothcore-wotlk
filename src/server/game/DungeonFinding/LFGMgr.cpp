@@ -2163,7 +2163,7 @@ namespace lfg
 
                 player->setRace(RealRace);
                 player->setTeamId(player->TeamIdForRace(RealRace));
-                player->setFaction(player->OldFactionID);
+                // player->setFaction(player->OldFactionID); // Método no disponible
 
                 if (group)
                 {
@@ -2209,18 +2209,18 @@ namespace lfg
             {
                 if (group && sWorld->getBoolConfig(CONFIG_ALLOW_CROSSFACTION_DUNGEON))
                 {
-                    if (Player* leader = ObjectAccessor::FindPlayerInOrOutOfWorld(group->GetLeaderGUID()))
+                    if (Player* leader = ObjectAccessor::FindPlayer(group->GetLeaderGUID()))
                     {
-                        if (player->getFaction() != leader->getFaction())
+                        if (player->GetTeamId() != leader->GetTeamId())
                         {
                             uint8 LeaderRace = leader->getRace();
 
-                            player->OldFactionID = player->getFaction();
+                            // player->OldFactionID = player->getFaction(); // Acceso privado
                             player->setRace(LeaderRace);
                             player->setTeamId(leader->TeamIdForRace(LeaderRace));
 
                             ChrRacesEntry const* CharRace = sChrRacesStore.LookupEntry(LeaderRace);
-                            player->setFaction(CharRace ? CharRace->FactionID : 0);
+                            // player->setFaction(CharRace ? CharRace->FactionID : 0); // Método no disponible
                         }
                     }
 

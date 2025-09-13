@@ -114,10 +114,7 @@ public:
     virtual void   ResetEventSeasonalQuests(uint16 event_id) = 0;
     [[nodiscard]] virtual std::string const& GetRealmName() const = 0;
     virtual void SetRealmName(std::string name) = 0;
-<<<<<<< HEAD
-=======
     virtual SQLQueryHolderCallback& AddQueryHolderCallback(SQLQueryHolderCallback&& callback) = 0;
->>>>>>> 18a5a2be5c2e361f52063ad614f959d4161d5ddd
 };
 
 #endif //AZEROTHCORE_IWORLD_H
