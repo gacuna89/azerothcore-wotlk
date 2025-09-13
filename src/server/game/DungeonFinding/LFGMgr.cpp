@@ -2162,8 +2162,7 @@ namespace lfg
                 uint8 RealRace = player->getRace(true);
 
                 player->setRace(RealRace);
-                player->setTeamId(player->TeamIdForRace(RealRace));
-                // player->setFaction(player->OldFactionID); // Método no disponible
+                player->SetFactionForRace(RealRace);
 
                 if (group)
                 {
@@ -2215,28 +2214,9 @@ namespace lfg
                         {
                             uint8 LeaderRace = leader->getRace();
 
-                            // player->OldFactionID = player->getFaction(); // Acceso privado
+                            player->OldFactionID = player->GetTeamId();
                             player->setRace(LeaderRace);
-                            player->setTeamId(leader->TeamIdForRace(LeaderRace));
-
-                            ChrRacesEntry const* CharRace = sChrRacesStore.LookupEntry(LeaderRace);
-                            // player->setFaction(CharRace ? CharRace->FactionID : 0); // Método no disponible
-                        }
-                    }
-
-                    for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
-                    {
-                        if (Player* player2 = itr->GetSource())
-                        {
-                            WorldPacket Data(SMSG_INVALIDATE_PLAYER, 8);
-                            Data << player2->GetGUID();
-                            player->GetSession()->SendPacket(&Data);
-                            player->GetSession()->SendNameQueryOpcode(player2->GetGUID());
-
-                            WorldPacket Data2(SMSG_INVALIDATE_PLAYER, 8);
-                            Data2 << player->GetGUID();
-                            player2->GetSession()->SendPacket(&Data2);
-                            player2->GetSession()->SendNameQueryOpcode(player->GetGUID());
+                            player->SetFactionForRace(LeaderRace);
                         }
                     }
                 }

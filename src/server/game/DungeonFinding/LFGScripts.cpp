@@ -90,6 +90,38 @@ namespace lfg
 
         sLFGMgr->InitializeLockedDungeons(player, group);
         sLFGMgr->SetTeam(player->GetGUID(), player->GetTeamId());
+        
+        if (group && sWorld->getBoolConfig(CONFIG_ALLOW_CROSSFACTION_DUNGEON))
+        {
+            if (Player* leader = ObjectAccessor::FindPlayer(group->GetLeaderGUID()))
+            {
+                if (player->GetTeamId() != leader->GetTeamId())
+                {
+                    uint8 LeaderRace = leader->getRace();
+
+                    player->OldFactionID = player->GetTeamId();
+                    player->setRace(LeaderRace);
+                    player->SetFactionForRace(LeaderRace);
+                }
+            }
+
+            for (GroupReference const* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
+            {
+                if (Player* player2 = itr->GetSource())
+                {
+                    WorldPacket Data(SMSG_INVALIDATE_PLAYER, 8);
+                    Data << player2->GetGUID();
+                    player->GetSession()->SendPacket(&Data);
+                    player->GetSession()->SendNameQueryOpcode(player2->GetGUID());
+
+                    WorldPacket Data2(SMSG_INVALIDATE_PLAYER, 8);
+                    Data2 << player->GetGUID();
+                    player2->GetSession()->SendPacket(&Data2);
+                    player2->GetSession()->SendNameQueryOpcode(player->GetGUID());
+                }
+            }
+        }
+        
         /// @todo - Restore LfgPlayerData and send proper status to player if it was in a group
     }
 
