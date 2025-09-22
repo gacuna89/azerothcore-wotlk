@@ -19,6 +19,7 @@
 #define _ACORE_TOKENIZE_H_
 
 #include <string_view>
+#include <string>
 #include <vector>
 
 namespace Acore

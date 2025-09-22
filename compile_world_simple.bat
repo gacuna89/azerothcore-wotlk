@@ -19,19 +19,23 @@ if not exist "bin" mkdir "bin"
 :: Ir al directorio de build
 cd var\build
 
-:: Limpiar configuracion anterior para worldserver
-if exist "CMakeCache.txt" (
-    echo Limpiando configuracion anterior...
-    del "CMakeCache.txt"
-    if exist "CMakeFiles" rmdir /s /q "CMakeFiles"
+:: Solo limpiar si es necesario (cambios en CMakeLists.txt o configuración)
+if not exist "CMakeCache.txt" (
+    echo Configuracion inicial de CMake...
+) else (
+    echo Usando configuracion existente de CMake...
 )
 
 echo [1/3] Configurando CMake para WorldServer...
-cmake "..\.." -G "Visual Studio 17 2022" -A x64
-if errorlevel 1 (
-    echo ERROR: Fallo en configuracion basica de CMake
-    pause
-    exit /b 1
+if not exist "CMakeCache.txt" (
+    cmake "..\.." -G "Visual Studio 17 2022" -A x64
+    if errorlevel 1 (
+        echo ERROR: Fallo en configuracion basica de CMake
+        pause
+        exit /b 1
+    )
+) else (
+    echo CMake ya configurado, saltando configuracion inicial...
 )
 
 echo [2/3] Configurando opciones de compilacion...
